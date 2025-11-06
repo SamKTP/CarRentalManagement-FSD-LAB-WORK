@@ -22,12 +22,18 @@ namespace CarRentalManagement.Data
         public DbSet<CarRentalManagement.Domain.Booking> Booking { get; set; } = default!;
         public DbSet<CarRentalManagement.Domain.Customer> Customer { get; set; } = default!;
 
+
+        //Seed Application
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ColourSeed());
             modelBuilder.ApplyConfiguration(new MakeSeed());
             modelBuilder.ApplyConfiguration(new ModelSeed());
+
+            modelBuilder.ApplyConfiguration(new RoleSeed());
+            modelBuilder.ApplyConfiguration(new UserRoleSeed());
+            modelBuilder.ApplyConfiguration(new UserSeed());
         }
     }
 }
