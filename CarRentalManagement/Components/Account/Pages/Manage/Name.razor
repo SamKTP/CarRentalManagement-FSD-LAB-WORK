@@ -1,0 +1,112 @@
+﻿@page "/Account/Manage/Name"
+
+@using System.ComponentModel.DataAnnotations
+@using CarRentalManagement.Data
+@using Microsoft.AspNetCore.Identity
+
+@inject IdentityUserAccessor UserAccessor;
+@inject UserManager<CarRentalManagementUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+@inject SignInManager<CarRentalManagementUser> SignInManager
+
+
+
+<PageTitle>Name</PageTitle>
+
+<h3>Edit Name</h3>
+<StatusMessage Message="@message" />
+<div class="row">
+    <div class="col-md-6">
+
+        <EditForm Model="Input" FormName="changeName" OnValidSubmit="OnValidSubmitAsync">
+            <DataAnnotationsValidator />
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.firstName" type="text" class="form-control" placeholder="Enter First Name"/>
+                <label>First Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.lastName" type="text" class="form-control" placeholder="Enter Last Name"/>
+                <label>Last Name</label>
+            </div>
+
+            <button type="submit" class="btn-primary btn btn-lg w-100">Edit Name</button>
+        </EditForm>
+    </div>
+
+    
+</div>
+
+@code {
+    private CarRentalManagementUser user = default!;
+
+    private string? firstname;
+    private string? lastname;
+    private string? message = "Nothing";
+
+
+    //get info about session
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    //create input object
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
+        firstname = user.FirstName;
+        lastname = user.LastName;
+
+        Console.WriteLine(firstname + " : " + lastname);
+
+        Input.firstName ??= firstname;
+        Input.lastName ??= lastname;
+    }
+
+    protected async Task OnValidSubmitAsync()
+    {
+        var hasChange = false;
+        if (Input.firstName != firstname)
+        {
+            hasChange = true;
+            user.FirstName = Input.firstName;
+        }
+        if (Input.lastName != lastname)
+        {
+            hasChange = true;
+            user.FirstName = Input.lastName;
+        }
+        if (hasChange)
+        {
+            var result = await UserManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                Console.WriteLine("Failed to update Name");
+                message = "Failed";
+                return;
+            }
+            message = "Success!";
+        }
+
+        //resign in user
+        await SignInManager.RefreshSignInAsync(user);
+        // inform of success
+        // RedirectManager.RedirectToCurrentPageWithStatus("Your Name has been Updated", HttpContext);
+    }
+
+    private sealed class InputModel
+    {
+        [Display(Name = "First Name")]
+        public string? firstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string? lastName { get; set; }
+    }
+
+}
