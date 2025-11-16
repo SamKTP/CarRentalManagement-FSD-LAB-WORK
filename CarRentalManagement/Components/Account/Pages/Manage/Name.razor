@@ -43,7 +43,7 @@
 
     private string? firstname;
     private string? lastname;
-    private string? message = "Nothing";
+    private string? message;
 
 
     //get info about session
@@ -63,7 +63,6 @@
         firstname = user.FirstName;
         lastname = user.LastName;
 
-        Console.WriteLine(firstname + " : " + lastname);
 
         Input.firstName ??= firstname;
         Input.lastName ??= lastname;

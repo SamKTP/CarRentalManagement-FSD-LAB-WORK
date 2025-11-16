@@ -6,6 +6,8 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<CarRentalManagement.Data.CarRentalManagementContext> DbFactory
 
+@attribute [Authorize(Roles = "Administrator, User")]
+
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>
@@ -23,8 +25,9 @@
 
     <TemplateColumn Context="colour">
         <a href="@($"colours/edit?id={colour.Id}")">Edit</a> |
-        <a href="@($"colours/details?id={colour.Id}")">Details</a> |
-        <a href="@($"colours/delete?id={colour.Id}")">Delete</a>
+        <a href="@($"colours/details?id={colour.Id}")">Details</a> 
+        | <a href="@($"colours/delete?id={colour.Id}")">Delete</a>
+        
     </TemplateColumn>
 </QuickGrid>
 
